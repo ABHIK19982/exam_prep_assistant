@@ -1,1 +1,6 @@
 config/tokens.ini
+.idea
+.idea/*
+output/*.log
+output/*.txt
+config/token.json
