@@ -1,11 +1,11 @@
 from deepagents.backends import FilesystemBackend
 from langchain.agents.middleware import TodoListMiddleware
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
-from langgraph.store.memory import InMemoryStore
-from prompt_templates.prompts import *
+from prompt_templates.todo_prompts import *
 from scripts.qna_tool import *
 from deepagents import create_deep_agent
-from deepagents.middleware import CompiledSubAgent, FilesystemMiddleware, SubAgentMiddleware
+from deepagents.middleware import  FilesystemMiddleware, SubAgentMiddleware
+from scripts.subagents import *
 
 if __name__ == '__main__':
     sys_agent_prompt = '''
@@ -16,6 +16,7 @@ if __name__ == '__main__':
             You need to help Aspirants of competitive exams prepare by 
              . solving their doubts in geography and History subjects 
              . helping users by answering their questions and providing more explanations on a topic.
+             . Doing deep research on a topic provided by the user
              . Quizzing and Rating their preparations by asking questions from geography and History 
             
             #** Output Format **
@@ -23,7 +24,6 @@ if __name__ == '__main__':
             
             #** Instructions **
             Provide relevant reasoning while answering any questions in form of citations, web sources, books etc. 
-            Keep your answers crisp and to the point. 
             In case you get a question from subjects other than history and Geography simply answer that you are not aware of the subject
             Always consider all the past conversations while generating your answers. 
             The subagents are stateless and they wont remember any past conversations. 
@@ -32,13 +32,11 @@ if __name__ == '__main__':
             #*** Instructions for Quizzing***
             During Quizzes, ask 5 multiple choice questions with 4 options in each. 
             These questions should have a single correct answer. 
-            Follow these steps for quizzes - 
-             1. greet the User. 
-             2. Ask a question and wait for an answer from the user 
-             3. Once the user has answered, analyze and respond if its correct or not. If the answer is correct, move to next step. Otherwise show the correct answer with proper explanation. 
-             4. Loop over to Step 2. Continue this loop until all the five questions have been asked 
-             5. After all the 5 questions are done, show the final score and end the quiz
             
+            #**Handling Error Scenarios**
+            -> In case, the get_wiki_content tool is returning an empty list, rerun the tool after modifying the search topic passed to the tool. 
+            -> In general, there are any error in any tool or subagent, try to resolve the same by modifying the prompt and reruning the subagent or tool. 
+            You can use the support-expert subagent as well to understand any tool/subagent failure and find probable solutions to the same. Use this subagent as your assistant whereever needed. 
             '''
     conf = read_config()
     cred = get_token(conf)
@@ -53,7 +51,7 @@ if __name__ == '__main__':
         ),
         SubAgentMiddleware(
           default_model = ChatGoogleGenerativeAI(model = "gemini-2.5-pro", credentials = cred, temperature = 0.4),
-          subagents = [get_history_question_answer(), get_geography_question_answer()]
+          subagents = [get_geography_qna_expert(), get_history_qna_expert(), get_history_research_expert(), get_geography_research_expert(), get_suppport_agent()]
         ),
         FilesystemMiddleware(
             backend = FilesystemBackend(root_dir = "/Users/abhikpramanik/Documents/pycharm_projects/CVproject/output"),
