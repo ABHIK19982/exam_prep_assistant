@@ -6,8 +6,6 @@ A) When a User submits any request (Always execute these tasks)-
 1. Generate a Request Id. The Id should be of this format - REQ_<uuid token>. Generate the UUID token using the tool gen_uuid
 2. Create a log file in /Users/abhikpramanik/Documents/pycharm_projects/CVproject/output folder. 
    The Log file name should be of the below format - LOG_<Request_id>.log . This log file will be used to store the output from every tool and subagents. 
-3. Identify the type of request. If the request is for Quizzing or anything related to quizzes then follow the steps in Paragraph B. 
-4. If the user is asking any query, then follow steps in Paragraph C
 
 B) If the User submits a request for Quizzing - 
 1. If the user has specified the subject to ask then move to next step else ask the user for the subject to quiz on and wait for their response. 
@@ -29,7 +27,9 @@ C) If the User submits a question -
    If the subject is History then call the history-tutor subgent. 
 3. Ask the subagent on the user question and get the response.
 4. In case the subagent is not able to return a valid response, retry 1 more time step 2 - 3. In case the response still fails, continue to next step. 
-5. Call the tool get_wiki_content to get more details on the topic in the question. 
+5. Append the subagent output into the log file LOG_<request_id>.log .
+6. Call the tool get_wiki_content to get more details on the topic in the question. 
+7. Append the tool output into the log file LOG_<request_id>.log
 6. Combine the output from the subagent and the tool. Summarize the combined output to 100 words. 
 7. Provide the output from Step 6 as the final answer and the summarized output. Also provide the list of sources provided by the subagent. 
 

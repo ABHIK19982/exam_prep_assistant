@@ -1,6 +1,6 @@
 from deepagents.backends import FilesystemBackend
-from langchain.agents.middleware import TodoListMiddleware
-from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+from langchain.agents.middleware import TodoListMiddleware, SummarizationMiddleware
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage, BaseMessage
 from prompt_templates.todo_prompts import *
 from scripts.qna_tool import *
 from deepagents import create_deep_agent
@@ -25,24 +25,21 @@ if __name__ == '__main__':
             #** Instructions **
             Provide relevant reasoning while answering any questions in form of citations, web sources, books etc. 
             In case you get a question from subjects other than history and Geography simply answer that you are not aware of the subject
-            Always consider all the past conversations while generating your answers. 
             The subagents are stateless and they wont remember any past conversations. 
             In case, there is an early stop due to MALFORMED_FUNCTION_CALL, restart the entire process once again. 
             
             #*** Instructions for Quizzing***
-            During Quizzes, ask 5 multiple choice questions with 4 options in each. 
-            These questions should have a single correct answer. 
+            During Quizzes, ask multiple choice questions with 4 options in each. 
+            These questions should have a single correct answer. Keep asking questions until the user asks to stop. 
+            Do not repeat questions. 
             
-            #**Handling Error Scenarios**
-            -> In case, the get_wiki_content tool is returning an empty list, rerun the tool after modifying the search topic passed to the tool. 
-            -> In general, there are any error in any tool or subagent, try to resolve the same by modifying the prompt and reruning the subagent or tool. 
-            You can use the support-expert subagent as well to understand any tool/subagent failure and find probable solutions to the same. Use this subagent as your assistant whereever needed. 
+            
             '''
     conf = read_config()
     cred = get_token(conf)
     agent = create_agent(
         name = "Competitive-exam-prep-Assistant",
-        model = ChatGoogleGenerativeAI(model = "gemini-2.5-pro",credentials = cred , temperature = 0.4),
+        model = ChatGoogleGenerativeAI(model = "gemini-2.5-pro",credentials = cred , temperature = 0.6),
         tools = [get_wiki_content, gen_uuid, write_to_file, write_logs],
         system_prompt = sys_agent_prompt,
         middleware = [
@@ -65,15 +62,23 @@ if __name__ == '__main__':
                 'write_file': 'Write the Todo list for each request to a log files with the name format - TODO_<Request_id>.json. The input to this tool should be a valid file path and the content to be written to the file.',
                 'edit_file': 'Use this tool to edit the content of log file with name format - TODO_<Request_id>.json. The input to this tool should be a valid file path and the content to be written to the file. Edit this file whenever there is an update to the todo List for a request'
             }
+        ),
+        SummarizationMiddleware(
+            model = ChatGoogleGenerativeAI(model = "gemini-2.5-flash-lite", credentials = cred, temperature = 0.4),
+            max_tokens_before_summary= 1500,
+            messages_to_keep=10
         )]
     )
-    print(AIMessage(content="Hello Aspirant! How may i help you with your preparation today ? "))
+    messages:list[BaseMessage] = []
+    messages.append(AIMessage(content="Hello Aspirant! How may i help you with your preparation today ? "))
     while True:
         user_input = input("Enter your query: ")
 
         if user_input.lower() == 'exit':
             break
-        response = agent.invoke({"messages":[{"role": "user","content":user_input}]})
+        messages.append(HumanMessage(user_input))
+        messages = messages[len(messages) - 10 if len(messages) > 10 else 0 : len(messages)]
+        response = agent.invoke({"messages":messages},{"recursion_limit": 100})
         print('------------------ Messages ---------------------')
         for i in response['messages']:
             if isinstance(i, HumanMessage):
@@ -87,4 +92,7 @@ if __name__ == '__main__':
         for i in response.keys():
             if i != 'messages':
                 print(i, ' -> ', response[i])
+        messages.append(response['messages'][-1])
+
+
 
