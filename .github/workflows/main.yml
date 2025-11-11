@@ -1,0 +1,17 @@
+            - name: Re-Deploy WebApp on PythonAnywhere
+  # You may pin to the exact commit or the version.
+  # uses: kazluBR/pythonanywhere-redeploy-action@a3ea0d679af164b5061e7c50aa5ba870a57c8533
+  uses: kazluBR/pythonanywhere-redeploy-action@v1.0.0
+  with:
+    # Pythonanywhere host
+    host: https://www.pythonanywhere.com/user/devpythonwebserver/
+    # Pythonanywhere username
+    username: devpythonwebserver
+    # Pythonanywhere API token
+    api_token: 828868f391d19f8bb5bebbb28bcbdf5cecbeb36b
+    # Domain name of the webapp
+    domain_name: # optional
+    # Framework type (django or flask)
+    framework_type: # optional, default is django
+    # Custom Django settings module to use for manage.py commands
+    django_settings: # optional
