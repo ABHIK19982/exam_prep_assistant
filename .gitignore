@@ -4,3 +4,5 @@ config/tokens.ini
 output/*.log
 output/*.txt
 config/token.json
+uv.lock
+main.py

@@ -43,7 +43,7 @@ D) If the User requests for a paragraph or essay on a topic -
 5. Call the tool get_wiki_content to get the details on the topic from wikipedia and summarize the content to 100 words. 
 6. Combine the output from step 3 and 5. Use the output from step 5 as the starting paragraph and as details add the output from step 3. 
 7. Ask the user if they want the paragraph as a text file or on the console and wait for User response. 
-8. If the user asks to write to a text file, store the entire output from step 6 into a text file in location output/Essay_<Topic>.txt.  
+8. If the user asks to write to a text file, store the entire output from step 6 into a text file in location output/Essay_<Topic>.txt. remember that the path given here is a relative path and not an absolute one.  
 9. In case they ask to show it on console, return the entire output in the console. 
 
 Consider all the past conversations while deciding on the steps. Log the output from each step in a file in the backend. 
