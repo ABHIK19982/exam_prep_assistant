@@ -4,7 +4,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from prompt_templates.subagent_prompts import *
 from langchain.agents.structured_output import ToolStrategy
 from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
-from langchain_openai.chat_models import ChatOpenAI
 from langchain.agents import create_agent
 from deepagents.middleware import CompiledSubAgent
 from pydantic import BaseModel, Field
@@ -29,8 +28,6 @@ def get_geography_qna_expert(model_type = 'gemini'):
         qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2,
                                          #credentials=cred,
                                          google_api_key=conf['GOOGLE']['API_KEY'])
-    elif model_type == 'openai':
-        qamodel = ChatOpenAI(model="gpt-5-mini", temperature=0.2, api_key=conf['OPENAI']['API_KEY'])
     else:
         #cred = get_token(conf)
         qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.2,
@@ -54,8 +51,6 @@ def get_history_qna_expert(model_type = 'gemini'):
         qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2,
                                          #credentials=cred,
                                          google_api_key=conf['GOOGLE']['API_KEY'])
-    elif model_type == 'openai':
-        qamodel = ChatOpenAI(model="gpt-5-mini", temperature=0.2, api_key=conf['OPENAI']['API_KEY'])
     else:
         #cred = get_token(conf)
         qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.2,

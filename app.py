@@ -63,7 +63,5 @@ def get_messages():
     return jsonify({'messages': messages_store})
 
 if __name__ == '__main__':
-
     app.run(host = '0.0.0.0',
-            port = os.environ['PORT'] if os.getenv('PORT') is not None else 4000
-            , debug=False)
+            port = os.environ['PORT'] if os.getenv('PORT') is not None else 4000, debug=False)
