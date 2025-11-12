@@ -36,7 +36,7 @@ sys_agent_prompt = '''
         
         '''
 conf = read_config()
-cred = get_token(conf)
+#cred = get_token(conf)
 agent = create_agent(
     name = "Competitive-exam-prep-Assistant",
     model = ChatGoogleGenerativeAI(model = "gemini-2.5-pro",
