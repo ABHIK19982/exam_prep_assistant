@@ -39,7 +39,10 @@ conf = read_config()
 cred = get_token(conf)
 agent = create_agent(
     name = "Competitive-exam-prep-Assistant",
-    model = ChatGoogleGenerativeAI(model = "gemini-2.5-pro",credentials = cred , temperature = 0.6),
+    model = ChatGoogleGenerativeAI(model = "gemini-2.5-pro",
+                                   #credentials = cred ,
+                                   temperature = 0.6,
+                                   google_api_key=conf['GOOGLE']['API_KEY']),
     tools = [get_wiki_content, gen_uuid, write_to_file, write_logs],
     system_prompt = sys_agent_prompt,
     middleware = [
@@ -47,7 +50,10 @@ agent = create_agent(
         system_prompt = TODO_LIST_SYS_PROMPT
     ),
     SubAgentMiddleware(
-      default_model = ChatGoogleGenerativeAI(model = "gemini-2.5-pro", credentials = cred, temperature = 0.4),
+      default_model = ChatGoogleGenerativeAI(model = "gemini-2.5-pro",
+                                             #credentials = cred,
+                                             google_api_key=conf['GOOGLE']['API_KEY'],
+                                             temperature = 0.4),
       subagents = [get_geography_qna_expert(), get_history_qna_expert(), get_history_research_expert(), get_geography_research_expert(), get_suppport_agent()]
     ),
     FilesystemMiddleware(
@@ -58,7 +64,9 @@ agent = create_agent(
         Make sure for each user query we have one and only on log file in the directory. ''',
     ),
     SummarizationMiddleware(
-        model = ChatGoogleGenerativeAI(model = "gemini-2.5-flash-lite", credentials = cred, temperature = 0.4),
+        model = ChatGoogleGenerativeAI(model = "gemini-2.5-flash-lite",
+                                       #credentials = cred,
+                                       google_api_key=conf['GOOGLE']['API_KEY'],temperature = 0.4),
         max_tokens_before_summary= 1500,
         messages_to_keep=10
     )]

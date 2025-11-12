@@ -27,14 +27,14 @@ def get_geography_qna_expert(model_type = 'gemini'):
     if model_type == 'gemini':
         cred = get_token(conf)
         qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2,
-                                         credentials=cred,
+                                         #credentials=cred,
                                          google_api_key=conf['GOOGLE']['API_KEY'])
     elif model_type == 'openai':
         qamodel = ChatOpenAI(model="gpt-5-mini", temperature=0.2, api_key=conf['OPENAI']['API_KEY'])
     else:
         cred = get_token(conf)
         qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.2,
-                                         credentials=cred,
+                                         #credentials=cred,
                                          google_api_key=conf['GOOGLE']['API_KEY'])
 
     qaagent = create_agent(model = qamodel, name = "geo-qna-agent",
@@ -52,14 +52,14 @@ def get_history_qna_expert(model_type = 'gemini'):
     if model_type == 'gemini':
         cred = get_token(conf)
         qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2,
-                                         credentials=cred,
+                                         #credentials=cred,
                                          google_api_key=conf['GOOGLE']['API_KEY'])
     elif model_type == 'openai':
         qamodel = ChatOpenAI(model="gpt-5-mini", temperature=0.2, api_key=conf['OPENAI']['API_KEY'])
     else:
         cred = get_token(conf)
         qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.2,
-                                         credentials=cred,
+                                         #credentials=cred,
                                          google_api_key=conf['GOOGLE']['API_KEY'])
 
     qaagent = create_agent(model=qamodel, name="hist-qna-agent",
@@ -77,7 +77,7 @@ def get_geography_research_expert():
     cred = get_token(conf)
     qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.6,
                                      thinking_budget = -1, include_thoughts = True,
-                                     credentials=cred,
+                                     #credentials=cred,
                                      google_api_key=conf['GOOGLE']['API_KEY'])
 
     qaagent = create_agent(model = qamodel, name = "geo-qna-agent",
@@ -95,7 +95,7 @@ def get_history_research_expert():
     cred = get_token(conf)
     qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.6,
                                      thinking_budget=-1, include_thoughts=True,
-                                     credentials=cred,
+                                     #credentials=cred,
                                      google_api_key=conf['GOOGLE']['API_KEY'])
 
     qaagent = create_agent(model=qamodel, name="hist-qna-agent",
@@ -114,7 +114,7 @@ def get_suppport_agent():
     cred = get_token(conf)
     qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.3,
                                      thinking_budget=-1,
-                                     credentials=cred,
+                                     #credentials=cred,
                                      google_api_key=conf['GOOGLE']['API_KEY'])
 
     qaagent = create_agent(model=qamodel, name="support-agent",

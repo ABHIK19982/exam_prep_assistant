@@ -6,3 +6,4 @@ output/*.txt
 config/token.json
 uv.lock
 main.py
+tokens.ini
