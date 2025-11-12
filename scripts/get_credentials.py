@@ -7,7 +7,7 @@ from google.auth.transport.requests import Request
 
 def read_config(config_file = 'tokens.ini'):
     config = configparser.ConfigParser()
-    config_path = os.path.join(os.path.dirname(__file__), '..','config', config_file)
+    config_path = os.path.join(os.path.dirname(__file__), '..', config_file)
     config.read(config_path)
     return config
 
