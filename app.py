@@ -1,0 +1,66 @@
+from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
+from metaagent import get_AI_response
+from datetime import datetime
+from dotenv  import load_dotenv
+import os
+load_dotenv('config/.env')
+
+app = Flask(__name__)
+CORS(app)
+
+app.config['SECRET_KEY'] = lambda: os.urandom(24).hex()
+
+messages_store = [{'role':'ai','content':'Hello Aspirant! How may i help you with your preparation today ?'}]
+
+AI_RESPONSES = [
+    "That's an interesting question! Let me think about that.",
+    "I understand what you're asking. Here's what I think...",
+    "Great point! I'd be happy to help you with that.",
+    "Thanks for sharing that with me. Let me provide some insights.",
+    "I appreciate your question. Here's my perspective on that.",
+    "That's a thoughtful query. Let me break that down for you.",
+]
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    try:
+        data = request.get_json()
+        user_message = data.get('message', '').strip()
+        
+        if not user_message:
+            return jsonify({'error': 'Message cannot be empty'}), 400
+        
+        user_msg = {
+            'sender': 'user',
+            'message': user_message,
+            'timestamp': datetime.now().isoformat()
+        }
+        messages_store.append({"role":'user', "content":user_message})
+        
+        ai_response = get_AI_response(messages_store, debug = True if os.getenv('AI_DEBUG') == 'Y' else False)
+        ai_msg = {
+            'sender': 'ai',
+            'message': '\n'.join([i['text'] for i in ai_response if i['type'] == 'text']),
+            'timestamp': datetime.now().isoformat()
+        }
+        messages_store.append({"role":'ai', "content":ai_response})
+        
+        return jsonify({
+            'user_message': user_msg,
+            'ai_response': ai_msg
+        })
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/messages', methods=['GET'])
+def get_messages():
+    return jsonify({'messages': messages_store})
+
+if __name__ == '__main__':
+    app.run(debug=False)
