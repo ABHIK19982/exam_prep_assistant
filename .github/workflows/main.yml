@@ -28,7 +28,7 @@ jobs:
       env:
         PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
       run: |
-        git remote add pythonanywhere https://www.pythonanywhere.com/user/devpythonwebserver/files/home/devpythonwebserver/mysites/examprepagent
+        git remote add pythonanywhere https://www.pythonanywhere.com/api/v0/user/devpythonwebserver/files/path/home/devpythonwebserver/mysites/examprepagent
         git push pythonanywhere release/v0.1
 
     - name: Reload webapp
