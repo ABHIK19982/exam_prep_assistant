@@ -1,9 +1,13 @@
+import os
+from dotenv import load_dotenv
+load_dotenv('config/local.env', verbose = True, override = True)
 from deepagents.backends import FilesystemBackend
 from langchain.agents.middleware import TodoListMiddleware, SummarizationMiddleware
 from prompt_templates.todo_prompts import *
 from scripts.qna_tool import *
 from deepagents.middleware import FilesystemMiddleware, SubAgentMiddleware
 from scripts.subagents import *
+
 
 
 sys_agent_prompt = '''
@@ -55,10 +59,10 @@ agent = create_agent(
       subagents = [get_geography_qna_expert(), get_history_qna_expert(), get_history_research_expert(), get_geography_research_expert(), get_suppport_agent()]
     ),
     FilesystemMiddleware(
-        backend = FilesystemBackend(root_dir = "/Users/abhikpramanik/Documents/pycharm_projects/CVproject/output"),
-        system_prompt = '''Write to the filesystem after each and every step.
-        For each user query create a new file at /Users/abhikpramanik/Documents/pycharm_projects/CVproject/output path.
-        The file name should follow this format: AGENT_LOG_<timestamp yyyyMMddhhmmss>.txt. if this file exist then edit this file instead of creating a duplicate.
+        backend = FilesystemBackend(root_dir = os.getenv("OUTPUT_LOG_LOC")),
+        system_prompt = f'''Write to the filesystem after each and every step.
+        For each user query create a new file at {os.getenv("OUTPUT_LOG_LOC")} path.
+        The file name should follow this format: AGENT_LOG_<timestamp yyyyMMddhhmmss>.txt. If this file exist then edit this file instead of creating a duplicate.
         Make sure for each user query we have one and only on log file in the directory. ''',
     ),
     SummarizationMiddleware(
@@ -72,12 +76,17 @@ agent = create_agent(
 
 def get_AI_response(messages, debug):
     #trunc_messages = messages[len(messages) - 10 if len(messages) > 10 else 0 : len(messages)]
+    if not os.path.exists(os.getenv("OUTPUT_LOG_LOC")):
+        os.mkdir(os.getenv('OUTPUT_LOG_LOC'),  0o755)
     response = agent.invoke({"messages":messages},{"recursion_limit": 100})
     if debug :
         for i in response['messages']:
             i.pretty_print()
     return response['messages'][-1].content
 
+if __name__ == '__main__':
+    print(TODO_LIST_SYS_PROMPT)
+    print(get_AI_response("What is the cause of downfall of the mauryan empire?", debug = True))
 
 
 

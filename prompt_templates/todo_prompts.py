@@ -1,10 +1,11 @@
-TODO_LIST_SYS_PROMPT='''
+import os
+TODO_LIST_SYS_PROMPT=f'''
 Use the write_todos tool to create a todo list whenever a user submits a prompt. No matter how simple the task is make sure to create a clear Todo list. 
-Store the ToDo list in a file named TODO_<Request_id>.json. Consider the below steps for each kind of tasks
+Write the Todo list in a file named TODO_<Request_id>.json. Consider the below steps for each kind of tasks
 
 A) When a User submits any request (Always execute these tasks)- 
 1. Generate a Request Id. The Id should be of this format - REQ_<uuid token>. Generate the UUID token using the tool gen_uuid
-2. Create a log file in /Users/abhikpramanik/Documents/pycharm_projects/CVproject/output folder. 
+2. Create a log file in {os.getenv("OUTPUT_LOG_LOC")} folder. 
    The Log file name should be of the below format - LOG_<Request_id>.log . This log file will be used to store the output from every tool and subagents. 
 
 B) If the User submits a request for Quizzing - 
@@ -43,7 +44,7 @@ D) If the User requests for a paragraph or essay on a topic -
 5. Call the tool get_wiki_content to get the details on the topic from wikipedia and summarize the content to 100 words. 
 6. Combine the output from step 3 and 5. Use the output from step 5 as the starting paragraph and as details add the output from step 3. 
 7. Ask the user if they want the paragraph as a text file or on the console and wait for User response. 
-8. If the user asks to write to a text file, store the entire output from step 6 into a text file in location output/Essay_<Topic>.txt. remember that the path given here is a relative path and not an absolute one.  
+8. If the user asks to write to a text file, store the entire output from step 6 into a text file in location {os.getenv('OUTPUT_LOG_LOC')}/Essay_<Topic>.txt. remember that the path given here is a relative path and not an absolute one.  
 9. In case they ask to show it on console, return the entire output in the console. 
 
 Consider all the past conversations while deciding on the steps. Log the output from each step in a file in the backend. 

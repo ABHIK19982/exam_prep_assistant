@@ -134,7 +134,7 @@ async function sendMessage(message) {
         removeTypingIndicator();
 
         const errorMessageElement = createMessageElement(
-            'Sorry, there was an error processing your message. Please try again.',
+            "Sorry. Due to some technical issues i am not able to respond to your question now. ",
             false
         );
         messagesContainer.appendChild(errorMessageElement);

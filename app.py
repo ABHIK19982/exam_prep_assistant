@@ -1,10 +1,19 @@
+from dotenv  import load_dotenv
+import os
+import subprocess
+
+host = subprocess.Popen(['hostname'], stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+if host == 'Abhiks-MacBook-Air.local':
+    print("Loading local env")
+    load_dotenv('config/local.env', verbose = True, override = True)
+else:
+    load_dotenv('config/.env', verbose = True ,override = True)
+
+
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from metaagent import get_AI_response
 from datetime import datetime
-from dotenv  import load_dotenv
-import os
-load_dotenv('config/.env')
 
 app = Flask(__name__)
 CORS(app)
@@ -56,6 +65,7 @@ def chat():
         })
     
     except Exception as e:
+        print(str(e))
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/messages', methods=['GET'])
@@ -64,4 +74,4 @@ def get_messages():
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0',
-            port = os.environ['PORT'] if os.getenv('PORT') is not None else 4000, debug=False)
+            port = os.environ['PORT'] if os.getenv('PORT') is not None else 4000, debug=True)
