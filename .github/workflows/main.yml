@@ -4,7 +4,8 @@ name: Deploy to PythonAnywhere
 on:
   push:
     branches:
-      - release/v0.1  # or your default branch name
+      - release/v0.1
+      - Development
 
 jobs:
   deploy:
