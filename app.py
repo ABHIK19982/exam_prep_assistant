@@ -1,15 +1,9 @@
 from dotenv  import load_dotenv
 import os
-import subprocess
-
-
 if os.environ.get('env_name') == 'LOCAL':
-    print("Loading local env")
     load_dotenv('config/local.env', verbose = True, override = True)
 else:
     load_dotenv('config/.env', verbose = True ,override = True)
-
-
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from metaagent import get_AI_response
@@ -17,19 +11,9 @@ from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
-
 app.config['SECRET_KEY'] = lambda: os.urandom(24).hex()
 
 messages_store = [{'role':'ai','content':'Hello Aspirant! How may i help you with your preparation today ?'}]
-
-AI_RESPONSES = [
-    "That's an interesting question! Let me think about that.",
-    "I understand what you're asking. Here's what I think...",
-    "Great point! I'd be happy to help you with that.",
-    "Thanks for sharing that with me. Let me provide some insights.",
-    "I appreciate your question. Here's my perspective on that.",
-    "That's a thoughtful query. Let me break that down for you.",
-]
 
 @app.route('/')
 def index():
@@ -54,7 +38,7 @@ def chat():
         ai_response = get_AI_response(messages_store, debug = True if os.getenv('AI_DEBUG') == 'Y' else False)
         ai_msg = {
             'sender': 'ai',
-            'message': '\n'.join([i['text'] for i in ai_response if i['type'] == 'text']),
+            'message': ai_response,
             'timestamp': datetime.now().isoformat()
         }
         messages_store.append({"role":'ai', "content":ai_response})

@@ -14,12 +14,18 @@ class QAOutputSchema(BaseModel):
     explanations: list[str] | str =  Field(description = "This Field will contain the explanations for the answer returned. It will provide proper reasoning as a list of strings. ")
     sources: list[str] | str = Field(description = "This Field will contain the list of sources used to answer the question. It will be a list of strings. ")
 
+class ResearchSchema(BaseModel):
+    topic: str =  Field(description = "This field will contain the name of the topic that the research agent is looking into. ")
+    thoughts: list[str] | str = Field(description = "This Field will contain the chain of thought that the agent is doing to answer the question. It will be a list of strings. ")
+    synopsis: str = Field(description = "This field will contain the research that the agent does")
+    sources: list[str] | str = Field(description = "This Field will contain the list of sources used to answer the question. It will be a list of strings. ")
+
 class SupportAgentOutputSchema(BaseModel):
     error: str = Field(description = "This field will contain the error message that the suuport agent is looking into. ")
     error_description: str = Field(description = "This field will contain the description of the error along with the probable cause of the error. ")
     solution_steps: list[str] = Field(description = "This field will contain the list of probable solution to try to resolve the error")
 
-def get_geography_qna_expert(model_type = 'gemini'):
+def get_qna_expert(model_type = 'gemini'):
     conf = read_config()
 
 
@@ -34,40 +40,18 @@ def get_geography_qna_expert(model_type = 'gemini'):
                                          #credentials=cred,
                                          google_api_key=conf['GOOGLE']['API_KEY'])
 
-    qaagent = create_agent(model = qamodel, name = "geo-qna-agent",
+    qaagent = create_agent(model = qamodel, name = "qna-agent",
                            response_format = ToolStrategy(QAOutputSchema),
-                           system_prompt = GEO_TUTOR_PROMPT)
+                           system_prompt = QNAAGENT_PROMPT)
     qna_subagent = CompiledSubAgent(
-        name = "geography-tutor",
-        description = "Agent for answering and reasoning any question as well as quizzing related to the subject Geography.",
+        name = "qna_agent",
+        description = "Agent for answering and reasoning any question as well as quizzing in any topic",
         runnable = qaagent
     )
     return qna_subagent
 
-def get_history_qna_expert(model_type = 'gemini'):
-    conf = read_config()
-    if model_type == 'gemini':
-        #cred = get_token(conf)
-        qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2,
-                                         #credentials=cred,
-                                         google_api_key=conf['GOOGLE']['API_KEY'])
-    else:
-        #cred = get_token(conf)
-        qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.2,
-                                         #credentials=cred,
-                                         google_api_key=conf['GOOGLE']['API_KEY'])
 
-    qaagent = create_agent(model=qamodel, name="hist-qna-agent",
-                           response_format=ToolStrategy(QAOutputSchema),
-                           system_prompt=HIST_TUTOR_PROMPT)
-    qna_subagent = CompiledSubAgent(
-        name="history-tutor",
-        description="Specialized agent for answering and reasoning any question as well as quizzing related to the subject History.",
-        runnable=qaagent
-    )
-    return qna_subagent
-
-def get_geography_research_expert():
+def get_research_expert():
     conf = read_config()
     #cred = get_token(conf)
     qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.6,
@@ -75,49 +59,12 @@ def get_geography_research_expert():
                                      #credentials=cred,
                                      google_api_key=conf['GOOGLE']['API_KEY'])
 
-    qaagent = create_agent(model = qamodel, name = "geo-qna-agent",
-                           response_format = ToolStrategy(QAOutputSchema),
-                           system_prompt = GEO_EXPERT_PROMPT)
+    qaagent = create_agent(model = qamodel, name = "research-agent",
+                           response_format = ToolStrategy(ResearchSchema),
+                           system_prompt = RESEARCH_AGENT_PROMPT)
     qna_subagent = CompiledSubAgent(
-        name = "geography-research-expert",
-        description = "Agent for answering and reasoning any question as well as quizzing related to the subject Geography.",
+        name = "research-expert",
+        description = "Agent for performing deep research and analysis on any topic",
         runnable = qaagent
     )
     return qna_subagent
-
-def get_history_research_expert():
-    conf = read_config()
-    #cred = get_token(conf)
-    qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.6,
-                                     thinking_budget=-1, include_thoughts=True,
-                                     #credentials=cred,
-                                     google_api_key=conf['GOOGLE']['API_KEY'])
-
-    qaagent = create_agent(model=qamodel, name="hist-qna-agent",
-                           response_format=ToolStrategy(QAOutputSchema),
-                           system_prompt=HIST_EXPERT_PROMPT)
-    qna_subagent = CompiledSubAgent(
-        name="history-research-expert",
-        description="Specialized agent for answering and reasoning any question as well as quizzing related to the subject History.",
-        runnable=qaagent
-    )
-    return qna_subagent
-
-
-def get_suppport_agent():
-    conf = read_config()
-    #cred = get_token(conf)
-    qamodel = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.3,
-                                     thinking_budget=-1,
-                                     #credentials=cred,
-                                     google_api_key=conf['GOOGLE']['API_KEY'])
-
-    qaagent = create_agent(model=qamodel, name="support-agent",
-                           response_format= ToolStrategy(SupportAgentOutputSchema),
-                           system_prompt=SUPPORT_AGENT_PROMPT)
-    subagent = CompiledSubAgent(
-        name="support-expert",
-        description="Specialized agent for looking into any error in any task and finding probable resolutions.",
-        runnable=qaagent
-    )
-    return subagent

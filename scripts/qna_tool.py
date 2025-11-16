@@ -11,7 +11,7 @@ def get_wiki_content(topic):
     url = requests.get(f"{conf['WIKI']['URL']}/{topic}")
     soup = BeautifulSoup(url.content, 'html.parser')
     data = [p.text for p in soup.find_all('p')]
-    return data
+    return '\n'.join(data)
 
 @tool(description = "This tool will be used to generate an UUID before starting to execute a request")
 def gen_uuid():
