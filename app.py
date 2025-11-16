@@ -2,8 +2,8 @@ from dotenv  import load_dotenv
 import os
 import subprocess
 
-host = subprocess.Popen(['hostname'], stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
-if host == 'Abhiks-MacBook-Air.local':
+
+if os.environ.get('env_name') == 'LOCAL':
     print("Loading local env")
     load_dotenv('config/local.env', verbose = True, override = True)
 else:
