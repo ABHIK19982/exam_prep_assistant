@@ -8,9 +8,12 @@ import os
 @tool(description = """This tool will be used to fetch details on any topic from Wikipedia using beautifulSoup""")
 def get_wiki_content(topic):
     conf = read_config('config/web_scraps.ini')
-    url = requests.get(f"{conf['WIKI']['URL']}/{topic}")
+    url = requests.get(f"{conf['WIKI']['url']}/{topic}",headers={'user-agent': conf['WIKI']['user_agent'], 'Accept-Encoding': 'gzip'})
     soup = BeautifulSoup(url.content, 'html.parser')
     data = [p.text for p in soup.find_all('p')]
+    if os.environ.get('env_name') == 'LOCAL':
+        with open(f'output/wiki_output_{topic}.txt','w') as f:
+            f.write('\n'.join(data))
     return '\n'.join(data)
 
 @tool(description = "This tool will be used to generate an UUID before starting to execute a request")

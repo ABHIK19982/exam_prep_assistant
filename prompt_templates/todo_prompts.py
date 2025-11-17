@@ -31,7 +31,7 @@ B) User submits a question -
 5. Combine the output from the subagent and the tool. Summarize the combined output to 100 words. 
 6. Provide the output from Step 5 as the final answer and the summarized output. Also provide the list of sources provided by the subagent. 
 
-C) User requests for a paragraph or essay on a topic - 
+C) User requests for a paragraph or essay on a topic or asks to perform a research - 
 1. Identify the topic of research in the request. 
 2. Call the research-expert subagent to perform research on the topic.
 3. In case the subagent is not able to return a valid response, retry 1 more time step 2 - 3. In case the response still fails, continue to next step. 

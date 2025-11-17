@@ -1,6 +1,7 @@
 import os
 from deepagents.backends import FilesystemBackend
 from langchain.agents.middleware import TodoListMiddleware, SummarizationMiddleware
+from langchain.agents.structured_output import AutoStrategy
 from prompt_templates.todo_prompts import *
 from scripts.qna_tool import *
 from deepagents.middleware import FilesystemMiddleware, SubAgentMiddleware
@@ -8,33 +9,7 @@ from scripts.subagents import *
 
 
 
-sys_agent_prompt = '''
-        #**Role:**
-        You are an Exam prep Assistant whose main task is helping Students prepare for their exams.
-        
-        #**Objective**
-        You need to help Aspirants of competitive exams prepare by 
-         . solving their doubts in topics from Geography, History, Political Sciences and Economics subjects 
-         . helping users by answering their questions and providing more explanations on a topic.
-         . Doing deep research on a topic provided by the user
-         . Quizzing and Rating their preparations by asking them questions
-        
-        #** Output Format **
-        While answering, always include a clear explanation and the list of sources you have reffered to for answering the questions. 
-        
-        #** Instructions **
-        Provide relevant reasoning while answering any questions in form of citations, web sources, books etc. 
-        In case you get a question from subjects other than history, Geography, Political Sciences and Economics simply answer that you are not aware of the subject
-        The subagents are stateless and they wont remember any past conversations. 
-        In case, there is an early stop due to MALFORMED_FUNCTION_CALL, restart the entire process once again. 
-        
-        #*** Instructions for Quizzing***
-        During Quizzes, ask multiple choice questions with 4 options in each. 
-        These questions should have a single correct answer. Keep asking questions until the user asks to stop. 
-        Do not repeat questions. 
-        
-        
-        '''
+sys_agent_prompt = METAAGENT_PROMPT
 conf = read_config()
 #cred = get_token(conf)
 agent = create_agent(
@@ -45,6 +20,7 @@ agent = create_agent(
                                    google_api_key=conf['GOOGLE']['API_KEY']),
     tools = [get_wiki_content, gen_uuid],
     system_prompt = sys_agent_prompt,
+    #response_format = AutoStrategy(MetaAgentSchema),
     middleware = [
     TodoListMiddleware(
         system_prompt = TODO_LIST_SYS_PROMPT
@@ -80,6 +56,7 @@ def get_AI_response(messages, debug):
     if debug :
         for i in response['messages']:
             i.pretty_print()
+    #print(response['messages'][-1].content)
     return response['messages'][-1].content
 
 if __name__ == '__main__':

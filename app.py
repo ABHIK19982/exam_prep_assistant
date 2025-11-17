@@ -38,7 +38,7 @@ def chat():
         ai_response = get_AI_response(messages_store, debug = True if os.getenv('AI_DEBUG') == 'Y' else False)
         ai_msg = {
             'sender': 'ai',
-            'message': ai_response,
+            'message': '\n'.join([i['text'] for i in ai_response if isinstance(i,dict) and i['type'] == 'text']) if isinstance(ai_response,list) else ai_response,
             'timestamp': datetime.now().isoformat()
         }
         messages_store.append({"role":'ai', "content":ai_response})
