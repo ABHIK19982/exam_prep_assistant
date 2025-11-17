@@ -29,6 +29,16 @@
             <div class="input-container">
                 <form id="chatForm">
                     <div class="input-wrapper">
+                        <div class="model-select-wrapper">
+                            <label for="modelSelect">Model</label>
+                            <select id="modelSelect" aria-label="Select a model">
+                                {% for model in available_models %}
+                                    <option value="{{ model.id }}" {% if model.id == default_model %}selected{% endif %}>
+                                        {{ model.label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         <textarea
                             id="messageInput"
                             placeholder="Type your message..."

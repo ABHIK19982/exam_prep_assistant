@@ -100,6 +100,20 @@ body {
     color: #495057;
 }
 
+.recent-message-button {
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+.recent-message-button:focus-visible {
+    outline: 2px solid #667eea;
+}
+
 .empty-state {
     text-align: center;
     color: #6c757d;
@@ -311,6 +325,38 @@ body {
     align-items: flex-end;
 }
 
+.model-select-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 170px;
+}
+
+.model-select-wrapper label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6c757d;
+}
+
+.model-select-wrapper select {
+    padding: 12px 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 14px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    background: #ffffff;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.model-select-wrapper select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    outline: none;
+}
+
 #messageInput {
     flex: 1;
     padding: 14px 18px;
@@ -378,6 +424,26 @@ body {
     cursor: not-allowed;
 }
 
+.download-container {
+    margin-top: 10px;
+}
+
+.download-button {
+    background: transparent;
+    border: 1px solid #667eea;
+    color: #667eea;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.download-button:hover {
+    background: #667eea;
+    color: #ffffff;
+}
+
 @media (max-width: 1024px) {
     .container {
         flex-direction: column;
@@ -440,6 +506,15 @@ body {
 
     .recent-messages {
         padding: 15px;
+    }
+
+    .input-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .model-select-wrapper {
+        width: 100%;
     }
 }
 
