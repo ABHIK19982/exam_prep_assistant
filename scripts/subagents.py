@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from prompt_templates.subagent_prompts import *
 from langchain.agents.structured_output import ToolStrategy
 from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
-from langchain_mistralai.chat_models import ChatMistralAI
+from langchain_openai.chat_models import ChatOpenAI
 from langchain.agents import create_agent
 from deepagents.middleware import CompiledSubAgent
 from scripts.output_schemas import *
@@ -21,6 +21,13 @@ def get_qna_expert(model_name: Optional[str] = None):
             model=target_model,
             temperature=0.2,
             google_api_key=conf['GOOGLE']['API_KEY']
+        )
+    elif 'gpt' in target_model or 'MiniMax' in target_model:
+            qamodel = ChatOpenAI(
+            model=target_model,
+            base_url = conf['OPENAI']['INFERENCE_PROVIDER'],
+            temperature=0.2,
+            api_key = conf['HUGGING_FACE']['HF_TOKEN']
         )
     else:
         qamodel = ChatGoogleGenerativeAI(
@@ -58,6 +65,13 @@ def get_research_expert(model_name: Optional[str] = None):
             })
 
         qamodel = ChatGoogleGenerativeAI(**model_kwargs)
+    elif 'gpt' in target_model or 'MiniMax' in target_model:
+            qamodel = ChatOpenAI(
+            model=target_model,
+            base_url = conf['OPENAI']['INFERENCE_PROVIDER'],
+            temperature=0.6,
+            api_key = conf['HUGGING_FACE']['HF_TOKEN']
+        )
     else:
         qamodel = ChatGoogleGenerativeAI(
             model=target_model,

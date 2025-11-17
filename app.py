@@ -41,7 +41,7 @@ def chat():
             'message': user_message,
             'timestamp': datetime.now().isoformat()
         }
-        messages_store.append({"role":'human', "content":user_message})
+        messages_store.append({"role":'user', "content":user_message})
         
         ai_response = get_AI_response(
             messages_store,
@@ -53,7 +53,7 @@ def chat():
             'message': '\n'.join([i['text'] for i in ai_response if isinstance(i,dict) and i['type'] == 'text']) if isinstance(ai_response,list) else ai_response,
             'timestamp': datetime.now().isoformat()
         }
-        messages_store.append({"role":'ai', "content":ai_response})
+        messages_store.append({"role":'assistant', "content":ai_response})
         
         return jsonify({
             'user_message': user_msg,

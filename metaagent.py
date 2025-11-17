@@ -16,7 +16,9 @@ conf = read_config()
 AVAILABLE_MODELS = [
     {"id": "gemini-2.5-flash", "label": "Gemini 2.5 Flash"},
     {"id": "gemini-2.5-flash-lite", "label": "Gemini 2.5 Flash Lite"},
-    {"id": "gemini-2.5-pro", "label": "Gemini 2.5 Pro"}
+    {"id": "gemini-2.5-pro", "label": "Gemini 2.5 Pro"},
+    {"id": "openai/gpt-oss-20b:fireworks-ai", "label": "GPT OSS:20B"},
+    {"id": "MiniMaxAI/MiniMax-M2:novita", "label":"MiniMax-M2"}
 ]
 DEFAULT_MODEL = AVAILABLE_MODELS[0]["id"]
 _MODEL_IDS = {model["id"] for model in AVAILABLE_MODELS}
@@ -31,18 +33,44 @@ def _resolve_model(model_name: Optional[str]) -> str:
 @lru_cache(maxsize=8)
 def _build_agent(model_name: str):
     selected_model = _resolve_model(model_name)
-    default_subagent_model = ChatGoogleGenerativeAI(
-        model=selected_model,
-        google_api_key=conf['GOOGLE']['API_KEY'],
-        temperature=0.4
-    )
+    if 'gpt' in selected_model or 'MiniMax' in selected_model:
+        default_subagent_model = ChatOpenAI(
+            model=selected_model,
+            base_url = conf['OPENAI']['INFERENCE_PROVIDER'],
+            temperature=0.4,
+            api_key = conf['HUGGING_FACE']['HF_TOKEN']
+        )
+        base_model = ChatOpenAI(
+            model=selected_model,
+            base_url = conf['OPENAI']['INFERENCE_PROVIDER'],
+            temperature=0.4,
+            api_key = conf['HUGGING_FACE']['HF_TOKEN']
+        )
+    elif 'gemini' in  selected_model:
+        default_subagent_model = ChatGoogleGenerativeAI(
+            model=selected_model,
+            google_api_key=conf['GOOGLE']['API_KEY'],
+            temperature=0.4
+        )
+        base_model = ChatGoogleGenerativeAI(
+            model=selected_model,
+            google_api_key=conf['GOOGLE']['API_KEY'],
+            temperature=0.2
+        )
+    else:
+        default_subagent_model = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",
+            google_api_key=conf['GOOGLE']['API_KEY'],
+            temperature=0.4
+        )
+        base_model = ChatGoogleGenerativeAI(model="gemini-2.5-flash",
+                               # credentials = cred ,
+                               temperature=0.6,
+                               google_api_key=conf['GOOGLE']['API_KEY']),
 
     return create_agent(
         name="Competitive-exam-prep-Assistant",
-        model=ChatGoogleGenerativeAI(model = "gemini-2.5-flash",
-                                   #credentials = cred ,
-                                   temperature = 0.6,
-                                   google_api_key=conf['GOOGLE']['API_KEY']),
+        model= base_model,
         tools=[get_wiki_content, gen_uuid],
         system_prompt=sys_agent_prompt,
         middleware=[

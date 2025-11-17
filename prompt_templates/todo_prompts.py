@@ -1,23 +1,23 @@
 
-TODO_LIST_SYS_PROMPT=f'''
+TODO_LIST_SYS_PROMPT='''
 Use the write_todos tool to create a todo list whenever a user submits a prompt. No matter how simple the task is make sure to create a clear Todo list. 
-Write the Todo list in a file named TODO_<Request_id>.json. 
+Write the Todo list in a file named TODO_<Request_id>.txt. 
 Follow the below format for storing the todo list 
-
-"Task 1": [
+{
+"Task 1": {
     "Name": "Name of task",
     "Details": "Details of the task like Tool name, subagent called etc."
-    "Status": "Status of the task"]
-"Task 2": [
+    "Status": "Status of the task"},
+"Task 2": {
     "Name": "Name of task",
     "Details": "Details of the task like Tool name, subagent called etc."
-    "Status": "Status of the task"]
-"Task 3": [
+    "Status": "Status of the task"},
+"Task 3": {
     "Name": "Name of task",
     "Details": "Details of the task like Tool name, subagent called etc."
-    "Status": "Status of the task"]
+    "Status": "Status of the task"},
 ....
-
+}
 Consider the below steps for each kind of tasks
 
 A) When a User submits any request (Always execute these tasks)- 
